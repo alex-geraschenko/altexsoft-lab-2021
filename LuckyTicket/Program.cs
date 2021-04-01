@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace testing_task
+namespace LuckyTicket
 {
     class Program
     {

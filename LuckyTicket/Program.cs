@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using static System.Console;
 
 namespace LuckyTicket
@@ -8,55 +9,36 @@ namespace LuckyTicket
         static void Main(string[] args)
         {
             WriteLine("Welcome to the Lucky Ticket calculator!");
+            Run();
+        }
 
+        private static void Run()
+        {
             while (true)
             {
-                Write("Please enter your ticket number or 'q' for exit: ");
+                string input = GetInput();
 
-                var input = ReadLine();
-
-                if (input == "q")
+                if (RequestToExit(input))
                 {
                     WriteLine("Good bye!");
                     break;
                 }
 
-                // validate
-                if (input.Length < 4)
+                if (!ValidateInputLength(input))
                 {
-                    WriteLine("Your ticket is too short. It should be from 4 to 8 digits");
                     continue;
                 }
 
-                if (input.Length > 8)
+                var digits = GetDigitsFromInput(input);
+
+                if (!ValidateInputDigits(digits))
                 {
-                    WriteLine("Your ticket is too long. It should be from 4 to 8 digits");
                     continue;
                 }
 
-                var digits = input.ToCharArray()
-                    .Select(s => s - '0')
-                    .ToList();
+                digits = NormalizeDigits(digits);
 
-                if (digits.Any(d => d > 10))
-                {
-                    WriteLine("Your ticket should contain just digits!");
-                    continue;
-                }
-
-                if (digits.Count % 2 != 0)
-                {
-                    digits.Insert(0, 0);
-                }
-
-                WriteLine($"Digits in ticket number: {string.Join(",", digits)}");
-
-                var sum1 = digits.Take(digits.Count / 2).Sum();
-                var sum2 = digits.Skip(digits.Count / 2).Sum();
-
-                WriteLine($"Sum1: {sum1}, Sum2: {sum2}");
-
-                if (sum1 == sum2)
+                if (ValidateTicketIsLucky(digits))
                 {
                     WriteLine("Congratulations! Your ticket is lucky");
                 }
@@ -65,6 +47,76 @@ namespace LuckyTicket
                     WriteLine("Sorry! Your ticket is not lucky");
                 }
             }
+        }
+
+        private static string GetInput()
+        {
+            Write("Please enter your ticket number or 'q' for exit: ");
+
+            var input = ReadLine();
+
+            return input;
+        }
+
+        private static bool RequestToExit(string input)
+        {
+            return input == "q";
+        }
+
+        private static bool ValidateInputLength(string input)
+        {
+            if (input.Length < 4)
+            {
+                WriteLine("Your ticket is too short. It should be from 4 to 8 digits");
+                return false;
+            }
+
+            if (input.Length > 8)
+            {
+                WriteLine("Your ticket is too long. It should be from 4 to 8 digits");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static IEnumerable<int> GetDigitsFromInput(string input)
+        {
+            return input.ToCharArray().Select(s => s - '0').ToArray();
+        }
+
+        private static bool ValidateInputDigits(IEnumerable<int> digits)
+        {
+            if (digits.Any(d => d > 10))
+            {
+                WriteLine("Your ticket should contain just digits!");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static IEnumerable<int> NormalizeDigits(IEnumerable<int> digits)
+        {
+            var result = new List<int>(digits);
+            if (result.Count % 2 != 0)
+            {
+                result.Insert(0, 0);
+            }
+            return result;
+        }
+
+        private static bool ValidateTicketIsLucky(IEnumerable<int> digits)
+        {
+            WriteLine($"Digits in ticket number: {string.Join(",", digits)}");
+
+            var halfOfNumber = digits.Count() / 2;
+            var sum1 = digits.Take(halfOfNumber).Sum();
+            var sum2 = digits.Skip(halfOfNumber).Sum();
+
+            WriteLine($"Sum1: {sum1}, Sum2: {sum2}");
+
+            return sum1 == sum2;
         }
     }
 }

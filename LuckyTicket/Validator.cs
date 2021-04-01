@@ -3,35 +3,43 @@ using System.Linq;
 
 namespace LuckyTicket
 {
+    public record ValidationResult(bool IsValid, string ErrorMessage = null);
+
     public class Validator
     {
         public string ErrorMessage { get; private set; }
 
-        public bool IsInputLengthValid(string input)
+        public ValidationResult IsInputLengthValid(string input)
         {
             if (input.Length < 4)
             {
-                ErrorMessage = "Your ticket is too short. It should be from 4 to 8 digits";
-                return false;
+                return new ValidationResult(
+                    IsValid: false,
+                    ErrorMessage: "Your ticket is too short. It should be from 4 to 8 digits"
+                );
             }
 
             if (input.Length > 8)
             {
-                ErrorMessage = "Your ticket is too long. It should be from 4 to 8 digits";
-                return false;
+                return new ValidationResult(
+                    IsValid: false,
+                    ErrorMessage: "Your ticket is too long. It should be from 4 to 8 digits"
+                );
             }
 
-            return true;
+            return new ValidationResult(IsValid: true);
         }
 
-        public bool InputDigitsValid(IEnumerable<int> digits)
+        public ValidationResult InputDigitsValid(IEnumerable<int> digits)
         {
             if (digits.Any(d => d > 9))
             {
-                ErrorMessage = "Your ticket should contain just digits!";
-                return false;
+                return new ValidationResult(
+                    IsValid: false,
+                    ErrorMessage: "Your ticket should contain just digits!"
+                );
             }
-            return true;
+            return new ValidationResult(IsValid: true);
         }
     }
 }

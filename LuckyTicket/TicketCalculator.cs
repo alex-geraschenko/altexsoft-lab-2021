@@ -28,18 +28,20 @@ namespace LuckyTicket
 
         private IEnumerable<int> GetDigitsFromInput(string input)
         {
-            if (!_validator.IsInputLengthValid(input))
+            var validationResult = _validator.IsInputLengthValid(input);
+            if (!validationResult.IsValid)
             {
-                throw new Exception(_validator.ErrorMessage);
+                throw new Exception(validationResult.ErrorMessage);
             }
             return input.ToCharArray().Select(s => s - '0').ToArray();
         }
 
         private IEnumerable<int> NormalizeDigits(IEnumerable<int> digits)
         {
-            if (!_validator.InputDigitsValid(digits))
+            var validationResult = _validator.InputDigitsValid(digits);
+            if (!validationResult.IsValid)
             {
-                throw new Exception(_validator.ErrorMessage);
+                throw new Exception(validationResult.ErrorMessage);
             }
 
             var result = new List<int>(digits);

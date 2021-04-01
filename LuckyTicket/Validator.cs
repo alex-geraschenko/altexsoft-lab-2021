@@ -26,7 +26,7 @@ namespace LuckyTicket
 
         public bool InputDigitsValid(IEnumerable<int> digits)
         {
-            if (digits.Any(d => d > 10))
+            if (digits.Any(d => d > 9))
             {
                 ErrorMessage = "Your ticket should contain just digits!";
                 return false;
